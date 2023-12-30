@@ -1,0 +1,9 @@
+package: com.arichorn.versionspoofer
+Name: YouTubeAppVersionSpoofer
+Version: 1.0
+Section: Tweaks
+Architecture: iphoneos-arm
+Description: An YouTube Tweak that lets you spoof the App Version.
+Maintainer: arichorn
+Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 14.0)
+Recommends: com.arichorn.lowcontrastmode
