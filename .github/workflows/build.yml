@@ -1,0 +1,45 @@
+name: Build YTAppVersionSpoofer deb
+
+on:
+  workflow_dispatch:
+    
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@main
+
+      - name: Checkout theos/theos
+        uses: actions/checkout@main
+        with:
+          repository: theos/theos
+          ref: master
+          submodules: recursive
+          path: theos
+
+      - name: Checkout chrisharper22/sdks
+        uses: actions/checkout@main
+        with:
+          repository: chrisharper22/sdks
+          ref: main
+          sparse-checkout: iPhoneOS16.2.sdk
+          path: theos/sdks
+
+      - name: Checkout PoomSmart/YouTubeHeader
+        uses: actions/checkout@main
+        with:
+          repository: PoomSmart/YouTubeHeader
+          ref: main
+          path: YouTubeHeader
+
+      - name: Build Package 
+        run: |
+          brew install make xz ldid 
+          export THEOS=theos
+          gmake clean package FINALPACKAGE=1
+          gmake clean package FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          path: packages/*.deb
