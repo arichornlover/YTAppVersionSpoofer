@@ -14,15 +14,38 @@ static int appVersionSpoofer() {
 
 #define SWITCH_ITEM(t, d, k) [sectionItems addObject:[YTSettingsSectionItemClass switchItemWithTitle:t titleDescription:d accessibilityIdentifier:nil switchOn:IS_ENABLED(k) switchBlock:^BOOL (YTSettingsCell *cell, BOOL enabled) {[[NSUserDefaults standardUserDefaults] setBool:enabled forKey:k];return YES;} settingItemId:0]]
 
+#define LOC(x) [tweakBundle localizedStringForKey:x value:nil table:nil]
+
+NSBundle *tweakBundle;
+
+extern NSBundle *YTAppVersionSpooferBundle();
+
+NSBundle *YTAppVersionSpooferBundle() {
+    static NSBundle *bundle = nil;
+    static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+        NSString *tweakBundlePath = [[NSBundle mainBundle] pathForResource:@"YTAppVersionSpoofer" ofType:@"bundle"];
+        if (tweakBundlePath)
+            bundle = [NSBundle bundleWithPath:tweakBundlePath];
+        else
+            bundle = [NSBundle bundleWithPath:ROOT_PATH_NS(@"/Library/Application Support/YTAppVersionSpoofer.bundle")];
+    });
+    return bundle;
+}
+
+%ctor {
+    tweakBundle = YTAppVersionSpooferBundle();
+}
+
 %hook YTSettingsViewController
 - (void)setSectionItems:(NSMutableArray <YTSettingsSectionItem *> *)sectionItems forCategory:(NSInteger)category title:(NSString *)title titleDescription:(NSString *)titleDescription headerHidden:(BOOL)headerHidden {
 
     if (category == 1) {
     SECTION_HEADER(@"App Version Spoofer");
 
-    SWITCH_ITEM(@"Enable App Version Spoofer", @"Enable this to use the Version Spoofer and select your perferred version below. App restart is required.", @"enableVersionSpoofer_enabled");
+    SWITCH_ITEM(LOC(@"APP_VERSION_SPOOFER"), LOC(@"APP_VERSION_SPOOFER_DESC"), @"enableVersionSpoofer_enabled");
     YTSettingsSectionItem *versionSpoofer = [%c(YTSettingsSectionItem)
-        itemWithTitle:@"Version spoofer picker"
+        itemWithTitle:LOC(@"VERSION_SPOOFER_TITLE")
         accessibilityIdentifier:nil
         detailTextBlock:^NSString *() {
             switch (appVersionSpoofer()) {
@@ -753,7 +776,7 @@ static int appVersionSpoofer() {
                     return YES;
                 }]
             ];
-            YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:@"Version spoofer picker" pickerSectionTitle:nil rows:rows selectedItemIndex:appVersionSpoofer() parentResponder:[self parentResponder]];
+            YTSettingsPickerViewController *picker = [[%c(YTSettingsPickerViewController) alloc] initWithNavTitle:LOC(@"VERSION_SPOOFER_TITLE") pickerSectionTitle:nil rows:rows selectedItemIndex:appVersionSpoofer() parentResponder:[self parentResponder]];
             [settingsViewController pushViewController:picker];
             return YES;
         }
