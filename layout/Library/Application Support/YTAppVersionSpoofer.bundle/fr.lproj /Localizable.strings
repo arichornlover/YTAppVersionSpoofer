@@ -1,0 +1,4 @@
+// YTAppVersionSpoofer
+"APP_VERSION_SPOOFER" = "Activer le simulateur de version d'application";
+"APP_VERSION_SPOOFER_DESC" = "Activez cela pour utiliser le simulateur de version et sélectionnez votre version préférée ci-dessous. Un redémarrage de l'application est nécessaire.";
+"VERSION_SPOOFER_TITLE" = "Sélecteur de simulateur de version";
